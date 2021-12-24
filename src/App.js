@@ -1,9 +1,10 @@
 import './App.css'
+import Map from './Map/Map'
 
 function App(){
   return (
     <div className='App'>
-     <h1>Hello Krishan</h1>
+      <Map/>
     </div>
   )
 }

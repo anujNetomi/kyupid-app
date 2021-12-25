@@ -1,4 +1,4 @@
-{
+export default {
     "type": "FeatureCollection",
     "crs": {
     "type": "name",
@@ -17,7 +17,6 @@
     "geometry": {
     "type": "Polygon",
     "coordinates": [
-    [
     [
     77.74495913453232,
     12.993406628665984
@@ -394,7 +393,7 @@
     77.74495913453232,
     12.993406628665984
     ]
-    ]
+    
     ]
     }
     },

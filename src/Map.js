@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import axios from 'axios'
 // import geoJson from './API/Area'
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2hhbmlzc2luZ2giLCJhIjoiY2t4bHhzZjdiM2hwMTJxcGdjNjRzM3NncyJ9.h5nCf2SgIPDb1awgNOfLyw';
@@ -11,6 +12,9 @@ function Map() {
   const [lng, setLng] = useState(77.74495913453232);
   const [lat, setLat] = useState(12.993406628665984);
   const [zoom, setZoom] = useState(10);
+  const [users, setUsers] = useState([])
+  const [currentAreaId, setCurrentAreaId] = useState(null)
+  const [currAreaUsers, setCurrAreaUsers] = useState(0)
 
   const popup = new mapboxgl.Popup({
     closeButton: true,
@@ -18,18 +22,9 @@ function Map() {
   });
 
 
-  const popupText = (feature) => {
-    const {properties : {name,pin_code,area_id}} = feature
-    return `<div>
-        <div>Name : ${name}</div>
-        <div>Pincode : ${pin_code}</div>
-        <div>Area id : ${area_id}</div>
-    </div>`
-  }
 
 
-
-  useEffect(() => {
+  useEffect(async () => {
     if (map.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -38,6 +33,10 @@ function Map() {
       zoom: zoom,
       pitch: 50
     });
+    await axios.get('https://kyupid-api.vercel.app/api/users')
+      .then((response) => {
+        setUsers(response.data.users)
+      }).catch(error => console.log(error))
   });
 
   useEffect(() => {
@@ -119,6 +118,29 @@ function Map() {
 
     })
   }, []);
+
+
+
+
+  const popupText = (feature) => {
+    const { properties: { name, pin_code, area_id } } = feature
+    setCurrentAreaId(area_id)
+    filterUsers()
+    return `<div>
+    <div>Name : ${name}</div>
+    <div>Pincode : ${pin_code}</div>
+    <div>Area id : ${area_id}</div>
+    <div>Total Users : ${currAreaUsers}</div>
+</div>`
+  }
+
+  const filterUsers = async () => {
+    if (currentAreaId) {
+      const currAreaUsers = users.filter(user => user.area_id === currentAreaId)
+      await setCurrAreaUsers(currAreaUsers.length)
+      console.log(currAreaUsers)
+    }
+  }
 
   return (
     <div>
